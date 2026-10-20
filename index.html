@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>测你像哪个历史人物 | 八字性格测评</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(160deg,#1a1033 0%,#2d1b4e 50%,#1a1033 100%);min-height:100vh;color:#f5efe0;padding:20px 16px 40px}
+.wrap{max-width:480px;margin:0 auto}
+h1{font-size:26px;text-align:center;letter-spacing:2px;background:linear-gradient(90deg,#e8c874,#f7e7b4,#e8c874);-webkit-background-clip:text;background-clip:text;color:transparent;margin:10px 0 6px}
+.sub{text-align:center;font-size:13px;color:#b8a88a;margin-bottom:22px}
+.card{background:rgba(255,248,230,.06);border:1px solid rgba(232,200,116,.35);border-radius:16px;padding:22px 18px;margin-bottom:16px;backdrop-filter:blur(4px)}
+label{display:block;font-size:14px;color:#e8c874;margin:14px 0 6px}
+label:first-child{margin-top:0}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(232,200,116,.4);background:rgba(0,0,0,.35);color:#f5efe0;font-size:16px;outline:none}
+input:focus,select:focus{border-color:#e8c874}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(90deg,#b8860b,#e8c874);color:#1a1033;font-size:17px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-top:20px}
+.btn:active{transform:scale(.98)}
+.progress{height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#b8860b,#e8c874);transition:width .3s}
+.qnum{font-size:12px;color:#b8a88a;letter-spacing:1px}
+.qtext{font-size:19px;line-height:1.55;margin:10px 0 18px}
+.opt{display:block;width:100%;text-align:left;padding:13px 14px;margin-bottom:10px;border-radius:12px;border:1px solid rgba(232,200,116,.35);background:rgba(0,0,0,.3);color:#f5efe0;font-size:15px;cursor:pointer;line-height:1.5}
+.opt:active{background:rgba(232,200,116,.25)}
+.hidden{display:none}
+.analyzing{text-align:center;padding:50px 0}
+.spin{width:56px;height:56px;margin:0 auto 18px;border-radius:50%;border:3px solid rgba(232,200,116,.25);border-top-color:#e8c874;animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.result-hero{text-align:center}
+.avatar{font-size:64px;margin:6px 0}
+.rname{font-size:30px;font-weight:700;color:#e8c874;letter-spacing:3px}
+.rtag{display:inline-block;margin-top:8px;padding:4px 14px;border:1px solid #e8c874;border-radius:20px;font-size:13px;color:#e8c874}
+.rline{font-size:15px;line-height:1.8;color:#efe6cf;margin-top:16px;text-align:left}
+.rline b{color:#e8c874}
+.sec-title{font-size:15px;color:#e8c874;letter-spacing:2px;margin:18px 0 8px;border-left:3px solid #e8c874;padding-left:8px}
+.bars{margin-top:6px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:13px}
+.bar-row span{width:38px;color:#b8a88a}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#b8860b,#e8c874)}
+.bar-val{width:30px;text-align:right;color:#e8c874}
+.disc{font-size:11px;color:#8a7d63;text-align:center;margin-top:18px;line-height:1.6}
+.share{background:rgba(232,200,116,.12);border:1px dashed rgba(232,200,116,.5);border-radius:12px;padding:14px;text-align:center;font-size:14px;margin-top:16px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>测你像哪个历史人物</h1>
+  <div class="sub">八字日主 × 性格问答 · 12 位历史人物为你揭晓</div>
+
+  <!-- 第一步：基本信息 -->
+  <div class="card" id="stepInfo">
+    <label>你的称呼（可选）</label>
+    <input id="inName" placeholder="如：小明" maxlength="10">
+    <label>性别</label>
+    <select id="inGender">
+      <option value="male">男</option>
+      <option value="female">女</option>
+    </select>
+    <label>出生日期（公历）</label>
+    <input id="inBirth" type="date" value="1995-06-15">
+    <button class="btn" id="btnStart">开始测评</button>
+    <div class="disc">本测试为娱乐性质，解析结合八字日主与性格维度，仅供参考。</div>
+  </div>
+
+  <!-- 第二步：答题 -->
+  <div class="card hidden" id="stepQuiz">
+    <div class="progress"><i id="progBar" style="width:0%"></i></div>
+    <div class="qnum" id="qNum"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+  </div>
+
+  <!-- 第三步：分析中 -->
+  <div class="card hidden" id="stepLoading">
+    <div class="analyzing">
+      <div class="spin"></div>
+      <div id="loadText" style="font-size:15px;color:#e8c874">正在排盘推演…</div>
+    </div>
+  </div>
+
+  <!-- 第四步：结果 -->
+  <div class="card hidden" id="stepResult">
+    <div class="result-hero">
+      <div style="font-size:13px;color:#b8a88a" id="rIntro"></div>
+      <div class="avatar" id="rAvatar"></div>
+      <div class="rname" id="rName"></div>
+      <div><span class="rtag" id="rTag"></span></div>
+    </div>
+    <div class="rline" id="rBazi"></div>
+    <div class="sec-title">人物解析</div>
+    <div class="rline" id="rDesc"></div>
+    <div class="sec-title">你的性格维度</div>
+    <div class="bars" id="rBars"></div>
+    <div class="sec-title">一句话批语</div>
+    <div class="rline" id="rVerdict"></div>
+    <div class="share" id="rShare"></div>
+    <button class="btn" onclick="location.reload()">再测一次</button>
+    <div class="disc">本结果由八字日主与答题维度综合匹配生成，为娱乐性质，仅供参考，不构成任何建议。</div>
+  </div>
+</div>
+
+<script>
+// ===== 八字日主计算（1900-01-01 为甲戌日，干支序10） =====
+const STEMS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const STEM_EL={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+function dayMaster(y,m,d){
+  const base=new Date(1900,0,1), t=new Date(y,m-1,d);
+  const diff=Math.round((t-base)/86400000);
+  const idx=((10+diff)%60+60)%60;
+  return STEMS[idx%10];
+}
+
+// ===== 维度与题目 =====
+// 维度：谋略 strategy / 魄力 bold / 才情 talent / 仁义 bene / 洒脱 free / 沉稳 steady
+const DIMS={strategy:'谋略',bold:'魄力',talent:'才情',bene:'仁义',free:'洒脱',steady:'沉稳'};
+const QUESTIONS=[
+ {q:'深夜独行山路，前方传来异响，你的第一反应是？',opts:[
+   {t:'停下脚步，先判断声音来源再决定路线',s:{strategy:3,steady:2}},
+   {t:'握紧手边能用的东西，迎上去看个究竟',s:{bold:3}},
+   {t:'绕道而行，安全第一，不值得冒险',s:{steady:3,strategy:1}},
+   {t:'反而觉得有趣，循声去探个究竟',s:{free:3,bold:1}}]},
+ {q:'朋友向你借一笔不小的钱，你会怎么做？',opts:[
+   {t:'直接借，朋友有难不能不管',s:{bene:3}},
+   {t:'先问清用途，量力而行地借一部分',s:{steady:2,strategy:1}},
+   {t:'委婉拒绝，钱的事容易伤感情',s:{strategy:2,steady:1}},
+   {t:'借钱之外，再帮他想个赚钱的法子',s:{bene:2,talent:1}}]},
+ {q:'如果穿越回古代，你最想做的第一件事是？',opts:[
+   {t:'结交权贵，谋个一官半职',s:{strategy:2,bold:1}},
+   {t:'游历山川，写诗作赋留名千古',s:{talent:3,free:2}},
+   {t:'隐居田园，远离纷争自在度日',s:{free:3,steady:1}},
+   {t:'招兵买马，干一番大事业',s:{bold:3,strategy:1}}]},
+ {q:'团队意见分歧很大时，你通常扮演什么角色？',opts:[
+   {t:'抛出一个让大家都服气的方案',s:{strategy:3,talent:1}},
+   {t:'拍板定调，错了算我的',s:{bold:3}},
+   {t:'倾听各方，慢慢调和',s:{bene:2,steady:2}},
+   {t:'不太参与，随大流就好',s:{free:2,steady:1}}]},
+ {q:'你更欣赏哪种人生？',opts:[
+   {t:'运筹帷幄，决胜千里',s:{strategy:3}},
+   {t:'快意恩仇，轰轰烈烈',s:{bold:2,free:2}},
+   {t:'才华横溢，名满天下',s:{talent:3}},
+   {t:'桃李满天下，受人敬重',s:{bene:3}}]},
+ {q:'遇到极不公平的待遇，你会？',opts:[
+   {t:'当场据理力争，绝不咽下这口气',s:{bold:3,bene:1}},
+   {t:'先忍下，暗中布局，日后讨回公道',s:{strategy:3,steady:1}},
+   {t:'算了，不值得为这种事消耗自己',s:{free:2,steady:2}},
+   {t:'把经历写下来，让更多人看见',s:{talent:2,bene:1}}]},
+ {q:'选一个你最向往的周末打开方式：',opts:[
+   {t:'约三五知己，把酒言欢',s:{free:2,bene:1}},
+   {t:'独自读书练字，享受安静',s:{talent:2,steady:1}},
+   {t:'研究一个新领域到废寝忘食',s:{talent:2,strategy:1}},
+   {t:'挑战一项高难度运动',s:{bold:3}}]},
+ {q:'如果用一句话形容你自己，最贴近的是？',opts:[
+   {t:'心中有丘壑，眉目皆山河',s:{strategy:2,talent:1}},
+   {t:'宁为玉碎，不为瓦全',s:{bold:3}},
+   {t:'但行好事，莫问前程',s:{bene:3,steady:1}},
+   {t:'人生得意须尽欢',s:{free:3,talent:1}}]},
+];
+
+// ===== 人物库（维度画像 + 解析） =====
+const FIGURES=[
+ {name:'诸葛亮',avatar:'🪭',tag:'卧龙 · 智圣',p:{strategy:10,steady:8,talent:7,bene:6,bold:3,free:2},
+  desc:'你和诸葛亮一样，是天生的谋略家。大事面前不慌，先看全局再落子。你享受"一切尽在掌握"的感觉，朋友遇到难题第一个想到的就是你。唯一要注意：想得太多容易累，偶尔也要允许事情脱离剧本。',
+  verdict:'鞠躬尽瘁之前，先学会给自己留一盏灯。'},
+ {name:'曹操',avatar:'⚔️',tag:'魏武 · 枭雄',p:{bold:9,strategy:9,steady:6,talent:6,bene:3,free:3},
+  desc:'你有曹操式的魄力与手腕：目标感极强，手段灵活，不被规矩束缚。你信奉"成大事者不拘小节"，执行力惊人。你的世界里没有"等准备好"，只有"先干了再说"。',
+  verdict:'宁教我负天下人——但记得留几个能说真话的人在身边。'},
+ {name:'李白',avatar:'🍶',tag:'诗仙 · 谪仙人',p:{talent:10,free:10,bold:6,strategy:2,steady:1,bene:4},
+  desc:'你骨子里是李白：才华藏不住，自由比天大。格子间困不住你，世俗的成功学也打动不了你。你活的就是一个"尽兴"，灵感来了挡都挡不住。',
+  verdict:'天生我材必有用——你的才华，值得被看见。'},
+ {name:'武则天',avatar:'👑',tag:'则天 · 女帝',p:{bold:10,strategy:8,steady:7,talent:5,bene:3,free:2},
+  desc:'你和武则天一样，有不容置疑的掌控力与野心。别人说"不可能"，你偏要证明给他们看。你不怕站在风口浪尖，因为你清楚：规则是强者写的。',
+  verdict:'无字碑前是非多——你的人生，你自己定义。'},
+ {name:'项羽',avatar:'🔥',tag:'西楚 · 霸王',p:{bold:10,bene:6,free:5,talent:3,strategy:2,steady:1},
+  desc:'你是项羽式的性情中人：重情重义，爱恨分明，爆发力惊人。你做事凭一股真气，赢得漂亮，输得坦荡。提醒一句：有时退一步不是认输，是给自己留条后路。',
+  verdict:'力拔山兮气盖世——柔一点，你会走得更远。'},
+ {name:'苏东坡',avatar:'🎋',tag:'东坡 · 乐天派',p:{talent:9,free:8,bene:7,steady:6,strategy:4,bold:4},
+  desc:'你像苏东坡：跌到谷底也能把日子过成诗。才华、幽默、通透，你全都有。人生起伏对你不是打击，是素材。这种"怎么都打不倒"的乐观，是你最大的福气。',
+  verdict:'一蓑烟雨任平生——你的豁达，是多少人的解药。'},
+ {name:'秦始皇',avatar:'🏯',tag:'始皇 · 千古一帝',p:{bold:9,strategy:8,steady:7,talent:3,bene:2,free:1},
+  desc:'你有秦始皇式的格局与决心：一旦认准方向，雷厉风行，不达目的不罢休。你喜欢把事情做成体系、做成标准。野心对你不是贬义词，是发动机。',
+  verdict:'统一六合的气魄之外，别忘了给自己留一段长城外的风景。'},
+ {name:'孔子',avatar:'📜',tag:'至圣 · 万世师表',p:{bene:10,steady:9,talent:7,strategy:5,bold:3,free:2},
+  desc:'你像孔子：心里有杆秤，做人有底线。你愿意成就他人，享受被信赖的感觉。在浮躁的环境里，你的稳重与正派反而是最稀缺的品质。',
+  verdict:'己所不欲，勿施于人——你的分寸感，是修养也是武器。'},
+ {name:'关羽',avatar:'🗡️',tag:'武圣 · 义绝',p:{bene:9,bold:8,steady:7,talent:3,strategy:4,free:2},
+  desc:'你和关羽一样把"义"字看得比天大：答应的事拼了命也做到，朋友的事就是自己的事。你的可靠是刻在骨子里的。只是要小心：太讲义气，容易被消耗。',
+  verdict:'义薄云天是你的旗——也要学会识人，不是人人都配。'},
+ {name:'岳飞',avatar:'🏹',tag:'武穆 · 精忠报国',p:{bene:8,bold:8,steady:8,strategy:5,talent:5,free:1},
+  desc:'你有岳飞式的自律与担当：认定的事九头牛拉不回，对自己比对别人还狠。你的靠谱来自日复一日的坚持。偶尔也要记得：对自己宽容一点，不算辜负。',
+  verdict:'莫等闲——但白了少年头之前，先好好睡一觉。'},
+ {name:'李清照',avatar:'🌸',tag:'易安 · 千古才女',p:{talent:10,free:6,bene:5,steady:4,strategy:3,bold:4},
+  desc:'你像李清照：敏感细腻，才情过人，对美有天然的感知力。你的情绪比别人更丰富，这既是天赋也是功课——你笔下的世界，总是比别人多一层颜色。',
+  verdict:'此情无计可消除——把情绪写成作品，它就是礼物。'},
+ {name:'王阳明',avatar:'🧘',tag:'阳明 · 心学宗师',p:{steady:9,strategy:7,talent:8,bene:7,bold:4,free:5},
+  desc:'你和王阳明一样，是向内求的人：遇事先修心，再做事。你相信"知行合一"，不空谈、不焦虑，在行动中找答案。这种定力，让你在乱局中总能稳住阵脚。',
+  verdict:'心即理——你最大的靠山，是你自己的心。'},
+];
+
+// ===== 流程 =====
+let scores={}, curQ=0, userInfo={};
+document.getElementById('btnStart').addEventListener('click', function(){
+  const name=document.getElementById('inName').value.trim();
+  const gender=document.getElementById('inGender').value;
+  const birth=document.getElementById('inBirth').value;
+  if(!birth){ alert('请选择出生日期'); return; }
+  const [y,m,d]=birth.split('-').map(Number);
+  userInfo={name:name||'你', gender, dm:dayMaster(y,m,d)};
+  userInfo.el=STEM_EL[userInfo.dm];
+  scores={}; Object.keys(DIMS).forEach(k=>scores[k]=0);
+  document.getElementById('stepInfo').classList.add('hidden');
+  document.getElementById('stepQuiz').classList.remove('hidden');
+  curQ=0; renderQ();
+});
+function renderQ(){
+  const item=QUESTIONS[curQ];
+  document.getElementById('progBar').style.width=(curQ/QUESTIONS.length*100)+'%';
+  document.getElementById('qNum').textContent='第 '+(curQ+1)+' / '+QUESTIONS.length+' 题';
+  document.getElementById('qText').textContent=item.q;
+  const box=document.getElementById('qOpts'); box.innerHTML='';
+  item.opts.forEach(function(o){
+    const b=document.createElement('button'); b.className='opt'; b.textContent=o.t;
+    b.addEventListener('click', function(){
+      Object.keys(o.s).forEach(k=>scores[k]+=o.s[k]);
+      curQ++;
+      if(curQ<QUESTIONS.length) renderQ(); else showLoading();
+    });
+    box.appendChild(b);
+  });
+}
+const LOAD_MSGS=['正在排盘推演…','正在参详你的日主…','正在翻阅千年人物谱…','正在为你匹配命格…'];
+function showLoading(){
+  document.getElementById('stepQuiz').classList.add('hidden');
+  document.getElementById('stepLoading').classList.remove('hidden');
+  let i=0;
+  const timer=setInterval(function(){
+    i=(i+1)%LOAD_MSGS.length;
+    document.getElementById('loadText').textContent=LOAD_MSGS[i];
+  },700);
+  setTimeout(function(){ clearInterval(timer); showResult(); },2400);
+}
+function showResult(){
+  document.getElementById('stepLoading').classList.add('hidden');
+  document.getElementById('stepResult').classList.remove('hidden');
+  // 匹配：维度向量余弦相似 + 日主五行微调
+  let best=null, bestScore=-1;
+  FIGURES.forEach(function(f){
+    let dot=0,na=0,nb=0;
+    Object.keys(DIMS).forEach(k=>{ dot+=scores[k]*f.p[k]; na+=scores[k]*scores[k]; nb+=f.p[k]*f.p[k]; });
+    let sim=dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+    if(sim>bestScore){ bestScore=sim; best=f; }
+  });
+  const matchPct=Math.round(82+bestScore*16); // 展示用契合度
+  document.getElementById('rIntro').textContent=userInfo.name+'，与你命格最契合的历史人物是（契合度 '+matchPct+'%）';
+  document.getElementById('rAvatar').textContent=best.avatar;
+  document.getElementById('rName').textContent=best.name;
+  document.getElementById('rTag').textContent=best.tag;
+  document.getElementById('rBazi').innerHTML='你的日主为 <b>'+userInfo.dm+userInfo.el+'</b>。'+baziLine(userInfo.dm);
+  document.getElementById('rDesc').textContent=best.desc;
+  document.getElementById('rVerdict').textContent=best.verdict;
+  // 维度条
+  const maxV=Math.max.apply(null,Object.values(scores));
+  const bars=document.getElementById('rBars'); bars.innerHTML='';
+  Object.keys(DIMS).forEach(function(k){
+    const pct=Math.round(scores[k]/(maxV||1)*100);
+    bars.innerHTML+='<div class="bar-row"><span>'+DIMS[k]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div><div class="bar-val">'+scores[k]+'</div></div>';
+  });
+  document.getElementById('rShare').innerHTML='📸 截图分享你的结果<br>想知道朋友像谁？把链接发给 TA 一起测';
+}
+function baziLine(dm){
+  const map={
+    '甲':'甲木如参天大树，正直向上、有担当，天生有股不服输的劲。',
+    '乙':'乙木如藤蔓花草，柔韧灵活、亲和力强，以柔克刚是你的本事。',
+    '丙':'丙火如太阳，热情外放、感染力强，走到哪都是人群的焦点。',
+    '丁':'丁火如灯烛，温暖细腻、洞察人心，外表安静内心有光。',
+    '戊':'戊土如高山，稳重可靠、有包容力，是别人眼里的定海神针。',
+    '己':'己土如田园，踏实包容、善于经营，默默把日子过成想要的样子。',
+    '庚':'庚金如刀剑，果断刚毅、执行力强，认准的事绝不拖泥带水。',
+    '辛':'辛金如珠宝，精致敏锐、追求完美，对品质有自己的坚持。',
+    '壬':'壬水如江河，智慧流动、适应力强，脑子转得比谁都快。',
+    '癸':'癸水如雨露，聪慧内敛、直觉敏锐，看似安静实则深不可测。'
+  };
+  return map[dm]||'';
+}
+</script>
+</body>
+</html>
